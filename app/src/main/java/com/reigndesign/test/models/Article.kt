@@ -7,6 +7,7 @@ class Article {
         const val ARTICLE: String = "article"
     }
 
+    var objectID: Int?=null
     var title: String? = null
     var story_title: String? = null
     var author: String = ""

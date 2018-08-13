@@ -2,8 +2,6 @@ package com.reigndesign.test.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.webkit.DownloadListener
-import android.webkit.WebViewClient
 
 import com.reigndesign.test.R
 import com.reigndesign.test.models.Article

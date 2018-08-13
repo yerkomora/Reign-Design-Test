@@ -4,7 +4,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitClient {
-
     private var retrofit: Retrofit? = null
     private const val BASE_URL = "http://hn.algolia.com/api/v1/"
 

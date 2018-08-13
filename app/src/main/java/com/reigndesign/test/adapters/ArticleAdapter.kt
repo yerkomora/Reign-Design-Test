@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.item_article.view.*
 
 import java.util.ArrayList
 
-class ArticleAdapter() : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
+class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
 
     var articles: ArrayList<Article> = ArrayList()
         set(value) {

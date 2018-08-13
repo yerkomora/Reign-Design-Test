@@ -3,7 +3,7 @@ package com.reigndesign.test
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import com.reigndesign.test.models.Article
+
 import com.reigndesign.test.models.Articles
 
 class MyApplication : Application() {
@@ -20,25 +20,26 @@ class MyApplication : Application() {
         sharedPreferences = getSharedPreferences(DATA, Context.MODE_PRIVATE)
     }
 
-    private var articles: String = ""
+    // Articles
 
-    fun setArticles(articleList: List<Article>) {
-        val articles = Articles()
-        articles.set(articleList)
+    fun setArticles(articles: Articles) {
         val json = articles.toJson()
 
-        val editor = sharedPreferences?.edit()
-        editor?.putString(ARTICLES, json)
-        editor?.apply()
+        if (sharedPreferences != null) {
+            val editor = sharedPreferences?.edit()
+            editor?.putString(ARTICLES, json)
+            editor?.apply()
+        }
     }
 
-    fun getArticles(): List<Article> {
+    fun getArticles(): Articles {
         val articles = Articles()
 
-        val json = sharedPreferences?.getString(ARTICLES, "")
-        if (json != null)
+        if (sharedPreferences != null) {
+            val json = sharedPreferences?.getString(ARTICLES, "")
             articles.fromJson(json)
+        }
 
-        return articles.get()
+        return articles
     }
 }
