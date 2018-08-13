@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Test</string>
+    <string name="empty">empty</string>
+    <string name="url_not"> NOT URL.</string>
+</resources>
