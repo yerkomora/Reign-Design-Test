@@ -1,41 +1,32 @@
 package com.reigndesign.test.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.Toast
 
-import com.reigndesign.test.MyApplication
 import com.reigndesign.test.R
 import com.reigndesign.test.adapters.ArticleAdapter
 import com.reigndesign.test.adapters.MySimpleCallback
+import com.reigndesign.test.interfaces.ArticlesInterface
 import com.reigndesign.test.models.Article
-import com.reigndesign.test.models.Articles
-import com.reigndesign.test.models.Result
-import com.reigndesign.test.network.RetrofitClient
-import com.reigndesign.test.network.RetrofitService
+import com.reigndesign.test.presenters.ArticlesPresenter
 
 import kotlinx.android.synthetic.main.activity_main.*
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+class MainActivity : ParentActivity(), ArticlesInterface.View {
 
-class MainActivity : ParentActivity() {
-
-    private lateinit var myApplication: MyApplication
-    private var retrofitService: RetrofitService? = null
     private lateinit var articleAdapter: ArticleAdapter
+    private lateinit var presenter: ArticlesPresenter
 
-    private var articles: Articles = Articles()
+    // ParentActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // MyApplication
-
-        myApplication = application as MyApplication
+        presenter = ArticlesPresenter(baseContext, this)
 
         // RecyclerView
 
@@ -45,23 +36,18 @@ class MainActivity : ParentActivity() {
 
         articleAdapter.onListener = object : ArticleAdapter.OnListener {
             override fun onClick(article: Article) {
-                if (article.urlValid())
-                    goArticle(article)
-                else {
-                    Toast.makeText(this@MainActivity, R.string.url_not, Toast.LENGTH_SHORT).show()
-                }
+                presenter.clickArticle(article)
             }
         }
 
-        // Swipe
+        // ItemTouchHelper
 
         val itemTouchHelper = ItemTouchHelper(
                 object : MySimpleCallback(0, ItemTouchHelper.LEFT) {
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, p1: Int) {
                         val position = viewHolder.adapterPosition
 
-                        articles.removeArticle(position)
-                        articleAdapter.removeArticle(position)
+                        presenter.swipeArticle(position)
                     }
                 })
 
@@ -69,49 +55,51 @@ class MainActivity : ParentActivity() {
 
         rvArticles.adapter = articleAdapter
 
-        // Retrofit
-
-        retrofitService = RetrofitClient.instance?.create(RetrofitService::class.java)
-
-        setArticles()
+        presenter.create()
 
         // SwipeRefreshLayout
 
-        srlProducts.setOnRefreshListener { setArticles() }
-    }
-
-    private fun setArticles() {
-        val products = retrofitService?.getProducts()
-        products?.enqueue(object : Callback<Result> {
-            override fun onResponse(call: Call<Result>, response: Response<Result>) {
-                if (response.isSuccessful) {
-                    val result = response.body() as Result
-
-                    articles.set(result.hits)
-                    articles.removeDeletes()
-
-                    articleAdapter.articles = ArrayList(articles.get())
-                    srlProducts.isRefreshing = false
-                    pbArticles.hide()
-                }
-            }
-
-            override fun onFailure(call: Call<Result>, t: Throwable) {
-                Toast.makeText(this@MainActivity, R.string.offline, Toast.LENGTH_SHORT).show()
-                articleAdapter.articles = ArrayList(articles.get())
-                srlProducts.isRefreshing = false
-                pbArticles.hide()
-            }
-        })
+        srlProducts.setOnRefreshListener { presenter.refreshArticles() }
     }
 
     override fun onPause() {
         super.onPause()
-        myApplication.setArticles(articles)
+        presenter.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        articles = myApplication.getArticles()
+        presenter.resume()
+    }
+
+    // ArticlesInterface.View
+
+    override fun showArticles(articles: ArrayList<Article>) {
+        articleAdapter.articles = articles
+
+        srlProducts.isRefreshing = false
+        pbArticles.hide()
+    }
+
+    override fun showMessageOffLine() {
+        Toast.makeText(this, R.string.offline, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun removeArticle(position: Int) {
+        articleAdapter.removeArticle(position)
+    }
+
+    override fun showRemoveFailed() {
+        Toast.makeText(this, R.string.remove_failed, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun goArticle(position: Int) {
+        val intent = Intent(this, ArticleActivity::class.java)
+        intent.putExtra(Article.POSITION, position)
+        startActivity(intent)
+    }
+
+    override fun showMessageNotUrl() {
+        Toast.makeText(this, R.string.url_not, Toast.LENGTH_SHORT).show()
     }
 }

@@ -4,10 +4,13 @@ import com.squareup.moshi.Moshi
 
 class Article {
     companion object {
-        const val ARTICLE: String = "article"
+        const val POSITION: String = "position"
     }
 
-    var objectID: Int?=null
+    @Transient
+    var position: Int = 0
+
+    var objectID: Int? = null
     var title: String? = null
     var story_title: String? = null
     var author: String = ""

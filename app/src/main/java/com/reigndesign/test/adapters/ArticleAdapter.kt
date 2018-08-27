@@ -1,7 +1,9 @@
 package com.reigndesign.test.adapters
 
+import android.support.v4.os.ConfigurationCompat
 import android.support.v7.widget.AppCompatTextView
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +12,8 @@ import com.reigndesign.test.R
 import com.reigndesign.test.models.Article
 
 import kotlinx.android.synthetic.main.item_article.view.*
-
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
 
@@ -41,9 +43,18 @@ class ArticleAdapter : RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val article = articles[position]
 
+        article.position = position
+
         holder.title.text = article.getStoryOrTitle()
 
-        val subTitle = "${article.author} - ${article.created_at}"
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        simpleDateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        val time = simpleDateFormat.parse(article.created_at).time
+        val now = System.currentTimeMillis()
+
+        val ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS)
+
+        val subTitle = "${article.author} - $ago"
         holder.subTitle.text = subTitle
 
         holder.view.setOnClickListener { onListener?.onClick(article) }

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Test</string>
     <string name="empty">empty</string>
-    <string name="url_not"> NOT URL.</string>
+    <string name="url_not">Not URL.</string>
     <string name="offline">Offline</string>
+    <string name="remove_failed">Remove Failed.</string>
+    <string name="url_error">Error URL.</string>
 </resources>

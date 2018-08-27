@@ -6,4 +6,6 @@
 	<li>Select the <strong>reign-design-test</strong> directory.</li>
 	<li>Install <strong>SDK dependencies</strong> (SDK Platform and SDK Tools).</li>
 	<li>Run App.</li>
-</ol>
+</ol>	
+<h2>Architecture</h2>
+<p>The architecture used is MVP (Model View Presenter).</p>
